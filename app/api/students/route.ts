@@ -64,7 +64,7 @@ export async function GET() {
         return {
           id: student.id,
           name: student.name,
-          isOnline: student.isActive,
+          isActive: student.isActive,
           currentTextbookId: student.recentTextbookId,
           textbookTitle,
           courseSubject,

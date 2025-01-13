@@ -7,12 +7,14 @@ import {
   IoCallOutline,
   IoBrushOutline,
   IoBookOutline,
+  IoChatboxOutline,
 } from "react-icons/io5";
 import { CalendarModal } from "./components/calendar";
 import { TextbookModal } from "./components/textbook-modal";
 import { TextbookViewer } from "./components/textbook-viewer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DrawingModal } from "./components/drawing-modal";
+import { MessageModal } from "./components/message-modal";
 
 export default function Home() {
   const queryClient = useQueryClient();
@@ -22,6 +24,7 @@ export default function Home() {
   const [selectedTextbookId, setSelectedTextbookId] = useState<string | null>(
     null
   );
+  const [isMessageOpen, setIsMessageOpen] = useState(false);
 
   const { data: userData } = useQuery({
     queryKey: ["recent-textbook"],
@@ -32,6 +35,16 @@ export default function Home() {
     },
     staleTime: 0,
     refetchOnWindowFocus: true,
+  });
+
+  const { data: unreadMessages } = useQuery({
+    queryKey: ["unreadMessages"],
+    queryFn: async () => {
+      const res = await fetch("/api/messages/unread");
+      if (!res.ok) throw new Error("Failed to fetch unread messages");
+      return res.json();
+    },
+    refetchInterval: 3000,
   });
 
   useEffect(() => {
@@ -94,6 +107,23 @@ export default function Home() {
           >
             <IoBookOutline className="w-6 h-6 text-text-secondary-light dark:text-text-secondary-dark group-hover:text-primary" />
           </button>
+          <button
+            onClick={() => setIsMessageOpen(true)}
+            className="p-3 rounded-full hover:bg-primary-bg transition-all duration-200 group relative"
+            title="선생님과 대화하기"
+          >
+            <IoChatboxOutline className="w-6 h-6 text-text-secondary-light dark:text-text-secondary-dark group-hover:text-primary" />
+            {unreadMessages?.count > 0 && (
+              <div className="absolute -top-1 -right-1">
+                <span className="relative flex h-5 w-5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-red opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-5 w-5 bg-accent-red justify-center items-center text-[10px] text-white">
+                    {unreadMessages.count}
+                  </span>
+                </span>
+              </div>
+            )}
+          </button>
         </div>
       </motion.div>
 
@@ -111,6 +141,11 @@ export default function Home() {
       <DrawingModal
         isOpen={isDrawingOpen}
         onClose={() => setIsDrawingOpen(false)}
+      />
+
+      <MessageModal
+        isOpen={isMessageOpen}
+        onClose={() => setIsMessageOpen(false)}
       />
     </div>
   );

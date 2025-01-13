@@ -2,18 +2,22 @@
 
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { IoCalendarOutline, IoRefreshOutline } from "react-icons/io5";
+import {
+  IoCalendarOutline,
+  IoRefreshOutline,
+  IoChatboxOutline,
+} from "react-icons/io5";
 
 import { useState, useEffect } from "react";
 import Calendar from "./components/calendar";
 import { AdminTextbookModal } from "./components/admin-textbook-modal";
-import { Prisma } from "@prisma/client";
+import { AdminMessageModal } from "./components/admin-message-modal";
 
 type Student = {
   id: string;
   name: string;
   course: string;
-  isOnline: boolean;
+  isActive: boolean;
   lastAccess: string;
   textbookTitle: string;
   courseSubject: string;
@@ -36,6 +40,7 @@ export default function Home() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isTextbookModalOpen, setIsTextbookModalOpen] = useState(false);
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
 
   const {
     data: students = [],
@@ -47,6 +52,16 @@ export default function Home() {
     queryFn: fetchStudents,
     refetchInterval: 2000,
     staleTime: 200,
+  });
+
+  const { data: unreadMessages } = useQuery({
+    queryKey: ["unreadMessages"],
+    queryFn: async () => {
+      const res = await fetch("/api/messages/unread");
+      if (!res.ok) throw new Error("Failed to fetch unread messages");
+      return res.json();
+    },
+    refetchInterval: 3000,
   });
 
   // students 데이터가 업데이트될 때마다 selectedStudent도 업데이트
@@ -90,7 +105,7 @@ export default function Home() {
     return new Date(a.startAt).getTime() - new Date(b.startAt).getTime();
   });
 
-  const onlineCount = students.filter((s: Student) => s.isOnline).length;
+  const onlineCount = students.filter((s: Student) => s.isActive).length;
 
   return (
     <div className="flex h-[calc(100vh-5rem)] bg-background-light dark:bg-background-dark">
@@ -110,6 +125,23 @@ export default function Home() {
             </p>
           </div>
           <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setIsMessageModalOpen(true)}
+              className="p-2 rounded-full hover:bg-primary-bg transition-colors relative"
+              title="메시지 보내기"
+            >
+              <IoChatboxOutline className="w-6 h-6 text-text-secondary-light dark:text-text-secondary-dark hover:text-primary" />
+              {unreadMessages?.count > 0 && (
+                <div className="absolute -top-1 -right-1">
+                  <span className="relative flex h-5 w-5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-red opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-5 w-5 bg-accent-red justify-center items-center text-[10px] text-white">
+                      {unreadMessages.count}
+                    </span>
+                  </span>
+                </div>
+              )}
+            </button>
             <button
               onClick={() => {
                 setSelectedStudent(null);
@@ -140,25 +172,25 @@ export default function Home() {
             <motion.button
               key={student.id}
               onClick={() =>
-                student.isOnline ? setSelectedStudent(student) : null
+                student.isActive ? setSelectedStudent(student) : null
               }
               className={`w-full p-4 text-left transition-all duration-200
                 ${
                   selectedStudent?.id === student.id
                     ? "bg-surface-hover-light dark:bg-surface-hover-dark"
-                    : student.isOnline
+                    : student.isActive
                     ? "hover:bg-surface-hover-light dark:hover:bg-surface-hover-dark hover:shadow-md"
                     : "opacity-50 cursor-not-allowed"
                 }`}
               whileHover={
-                student.isOnline
+                student.isActive
                   ? {
                       scale: 1.01,
                       transition: { duration: 0.2 },
                     }
                   : undefined
               }
-              whileTap={student.isOnline ? { scale: 0.99 } : undefined}
+              whileTap={student.isActive ? { scale: 0.99 } : undefined}
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -166,7 +198,7 @@ export default function Home() {
                     <span className="text-sm font-medium text-text-primary-light dark:text-text-primary-dark">
                       {student.name}
                     </span>
-                    {student.isOnline && (
+                    {student.isActive && (
                       <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-online opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-status-online"></span>
@@ -216,7 +248,7 @@ export default function Home() {
             </div>
 
             <div className="bg-surface-light dark:bg-surface-dark rounded-lg shadow-md dark:shadow-lg h-[calc(100%-6rem)]">
-              {selectedStudent.isOnline ? (
+              {selectedStudent.isActive ? (
                 <div className="h-full flex items-center justify-center bg-surface-hover-light dark:bg-surface-hover-dark rounded-lg">
                   <p className="text-text-primary-light dark:text-text-primary-dark">
                     수업 화면이 표시됩니다.
@@ -242,6 +274,11 @@ export default function Home() {
         onClose={() => setIsTextbookModalOpen(false)}
         studentId={selectedStudent?.id ?? ""}
         currentTextbookId={selectedStudent?.currentTextbookId}
+      />
+
+      <AdminMessageModal
+        isOpen={isMessageModalOpen}
+        onClose={() => setIsMessageModalOpen(false)}
       />
     </div>
   );
