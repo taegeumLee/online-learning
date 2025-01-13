@@ -75,7 +75,7 @@ export function AdminMessageModal({ isOpen, onClose }: AdminMessageModalProps) {
   };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   };
 
   useEffect(() => {
@@ -150,7 +150,7 @@ export function AdminMessageModal({ isOpen, onClose }: AdminMessageModalProps) {
 
             {selectedStudent ? (
               <>
-                <div className="flex-1 overflow-y-auto p-4 space-y-2 scroll-smooth">
+                <div className="flex-1 overflow-y-auto p-4 space-y-2">
                   {messages.map((msg: any) => (
                     <div
                       key={msg.id}
