@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Logo from "@/public/vercel.svg";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { IoLogOutOutline } from "react-icons/io5";
@@ -33,7 +32,7 @@ export default function TabBar() {
               transition={{ duration: 0.5 }}
             >
               <Image
-                src={Logo}
+                src="/logo.png"
                 alt="Logo"
                 width={50}
                 height={50}

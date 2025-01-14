@@ -61,12 +61,12 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] bg-background-light dark:bg-background-dark">
+    <div className="flex h-[calc(100vh-5rem)] bg-background-light dark:bg-background-dark overflow-hidden">
       {/* 메인 콘텐츠 영역 */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex-1 p-6 bg-background-light dark:bg-background-dark"
+        className="flex-1 p-6 bg-background-light dark:bg-background-dark relative z-0"
       >
         <div className="h-full bg-surface-light dark:bg-surface-dark rounded-lg shadow-md overflow-hidden">
           <TextbookViewer textbookId={selectedTextbookId} />
@@ -77,7 +77,7 @@ export default function Home() {
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="w-16 bg-surface-light dark:bg-surface-dark border-l border-border-light dark:border-border-dark"
+        className="w-16 bg-surface-light dark:bg-surface-dark border-l border-border-light dark:border-border-dark relative z-10"
       >
         <div className="h-full flex flex-col items-center py-6 space-y-6">
           <button

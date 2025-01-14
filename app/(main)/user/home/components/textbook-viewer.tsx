@@ -158,17 +158,22 @@ export function TextbookViewer({ textbookId }: TextbookViewerProps) {
       animate={{ opacity: 1 }}
       className="h-full"
     >
-      <div className="h-16 px-6 border-b border-border-light dark:border-border-dark flex items-center justify-between">
-        <div>
-          <h1 className="font-medium">
-            {textbook.sequence}. {textbook.title}
-          </h1>
-        </div>
-        <div className="text-sm text-text-secondary-light dark:text-text-secondary-dark">
-          Level {textbook.level}
+      <div className="absolute top-8 left-8 z-10 bg-white/80 dark:bg-black/80 backdrop-blur-sm px-4 py-2 rounded-lg shadow-sm">
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-primary">
+            Lv.{textbook.level}
+          </span>
+          <h1 className="text-sm font-medium">{textbook.title}</h1>
         </div>
       </div>
-      <div className="h-[calc(100%-4rem)] overflow-auto">
+      <div
+        className="h-full overflow-auto notion-app notion-frame"
+        style={
+          {
+            "--notion-header-height": "0px",
+          } as React.CSSProperties
+        }
+      >
         <NotionRenderer
           recordMap={notionData}
           components={{
