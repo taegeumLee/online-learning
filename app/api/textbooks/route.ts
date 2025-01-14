@@ -53,7 +53,8 @@ export async function GET() {
     }));
 
     return NextResponse.json(textbooksWithOwnership);
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch textbooks" },
       { status: 500 }

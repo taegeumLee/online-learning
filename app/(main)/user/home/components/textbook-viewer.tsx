@@ -28,7 +28,7 @@ const Pdf = dynamic(() =>
   import("react-notion-x/build/third-party/pdf").then((m) => m.Pdf)
 );
 
-const notion = new NotionAPI();
+const _notion = new NotionAPI();
 
 interface TextbookViewerProps {
   textbookId: string | null;

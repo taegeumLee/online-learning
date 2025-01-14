@@ -39,7 +39,8 @@ export async function GET() {
     });
 
     return NextResponse.json(messages);
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch messages" },
       { status: 500 }
@@ -74,7 +75,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(message);
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("Error:", error);
     return NextResponse.json(
       { error: "Failed to send message" },
       { status: 500 }

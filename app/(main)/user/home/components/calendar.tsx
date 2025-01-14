@@ -13,6 +13,17 @@ interface CalendarModalProps {
   onClose: () => void;
 }
 
+interface Schedule {
+  id: string;
+  startAt: string;
+  endAt: string;
+  status: string;
+  user?: {
+    id: string;
+    name: string;
+  };
+}
+
 export function CalendarModal({ isOpen, onClose }: CalendarModalProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -28,7 +39,7 @@ export function CalendarModal({ isOpen, onClose }: CalendarModalProps) {
       if (!res.ok) throw new Error("Failed to fetch schedules");
       const data = await res.json();
 
-      return data.map((schedule: any) => ({
+      return data.map((schedule: Schedule) => ({
         id: schedule.id,
         title: "수업",
         start: schedule.startAt,

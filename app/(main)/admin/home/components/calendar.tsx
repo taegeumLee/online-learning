@@ -7,6 +7,13 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  EventClickArg,
+  DateSelectArg,
+  EventDropArg,
+  EventInput,
+  PluginDef,
+} from "@fullcalendar/core";
 
 const colors = {
   primary: {
@@ -72,8 +79,8 @@ interface Schedule {
   id: string;
   startAt: string;
   endAt: string;
-  userId?: string;
   status: string;
+  userId?: string;
   user?: {
     id: string;
     name: string;
@@ -241,7 +248,7 @@ function CreateEventModal({
                   {search ? "검색 결과가 없습니다" : "학생을 검색해주세요"}
                 </div>
               ) : (
-                students.map((student: any) => (
+                students.map((student: Student) => (
                   <div
                     key={student.id}
                     onClick={() => setSelectedStudent(student.id)}
@@ -303,6 +310,36 @@ function CreateEventModal({
   );
 }
 
+// Student 타입 정의
+interface Student {
+  id: string;
+  name: string;
+  textbooks: Array<{ id: string; title: string }>;
+}
+
+// FullCalendarComponent에서 사용할 props 타입 정의
+interface CalendarProps {
+  initialView: string;
+  plugins: PluginDef[];
+  headerToolbar: {
+    left: string;
+    center: string;
+    right: string;
+  };
+  events: EventInput[];
+  selectable: boolean;
+  editable: boolean;
+  selectMirror: boolean;
+  dayMaxEvents: boolean;
+  allDaySlot: boolean;
+  slotMinTime: string;
+  slotMaxTime: string;
+  eventClick: (arg: EventClickArg) => void;
+  select: (arg: DateSelectArg) => void;
+  eventDrop: (arg: EventDropArg) => void;
+  viewDidMount: (arg: { view: { type: string } }) => void;
+}
+
 export default function Calendar() {
   const [mounted, setMounted] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Schedule | null>(null);
@@ -337,19 +374,16 @@ export default function Calendar() {
         }
 
         const colorKey = studentColors.get(schedule.user?.id) || "pending";
-        const statusColor =
-          colors.event[schedule.status as keyof typeof colors.event] ||
-          colors.event.pending;
-        const studentColor =
-          colors.event[colorKey as keyof typeof colors.event];
 
         return {
           id: schedule.id,
           title: schedule.user?.name || "수업",
           start: schedule.startAt,
           end: schedule.endAt,
-          backgroundColor: studentColor.bg,
-          borderColor: studentColor.border,
+          backgroundColor:
+            colors.event[colorKey as keyof typeof colors.event].bg,
+          borderColor:
+            colors.event[colorKey as keyof typeof colors.event].border,
           textColor: "#FFFFFF",
           extendedProps: {
             status: schedule.status,
@@ -414,21 +448,21 @@ export default function Calendar() {
     },
   });
 
-  const handleEventClick = (info: any) => {
+  const handleEventClick = (info: EventClickArg) => {
     if (currentView !== "timeGridWeek") return;
 
     setSelectedEvent({
       id: info.event.id,
       startAt: info.event.startStr,
       endAt: info.event.endStr,
-      status: info.event.status,
+      status: info.event.extendedProps.status || "pending",
     });
     setIsModalOpen(true);
   };
 
-  const handleDateSelect = (selectInfo: any) => {
+  const handleDateSelect = (selectInfo: DateSelectArg) => {
     if (currentView !== "timeGridWeek") {
-      selectInfo.view.unselect();
+      selectInfo.view.calendar.unselect();
       return;
     }
 
@@ -439,7 +473,7 @@ export default function Calendar() {
     setIsCreateModalOpen(true);
   };
 
-  const handleEventDrop = async (dropInfo: any) => {
+  const handleEventDrop = async (dropInfo: EventDropArg) => {
     if (currentView !== "timeGridWeek") {
       dropInfo.revert();
       return;
@@ -450,7 +484,7 @@ export default function Calendar() {
       id: event.id,
       startAt: event.startStr,
       endAt: event.endStr,
-      status: event.status,
+      status: event.extendedProps.status || "pending",
     });
   };
 
@@ -636,34 +670,27 @@ export default function Calendar() {
       `}</style>
 
       <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="timeGridWeek"
-        headerToolbar={{
-          left: "prev,next today",
-          center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
-        }}
-        editable={currentView === "timeGridWeek"}
-        selectable={currentView === "timeGridWeek"}
-        selectMirror={true}
-        dayMaxEvents={true}
-        events={schedules}
-        select={handleDateSelect}
-        eventClick={handleEventClick}
-        eventDrop={handleEventDrop}
-        slotMinTime="09:00:00"
-        slotMaxTime="22:00:00"
-        allDaySlot={false}
-        locale="ko"
-        nowIndicator={true}
-        slotEventOverlap={false}
-        eventTimeFormat={{
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }}
-        viewDidMount={(info) => setCurrentView(info.view.type)}
-        height="100%"
+        {...({
+          initialView: currentView,
+          plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+          headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek",
+          },
+          events: schedules,
+          selectable: true,
+          editable: true,
+          selectMirror: true,
+          dayMaxEvents: true,
+          allDaySlot: false,
+          slotMinTime: "09:00:00",
+          slotMaxTime: "22:00:00",
+          eventClick: handleEventClick,
+          select: handleDateSelect,
+          eventDrop: handleEventDrop,
+          viewDidMount: (arg) => setCurrentView(arg.view.type),
+        } as CalendarProps)}
       />
       <CreateEventModal
         isOpen={isCreateModalOpen}

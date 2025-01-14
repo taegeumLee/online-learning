@@ -12,6 +12,16 @@ interface MessageModalProps {
   onClose: () => void;
 }
 
+interface Message {
+  id: string;
+  content: string;
+  senderId: string;
+  createdAt: string;
+  sender: {
+    name: string;
+  };
+}
+
 export function MessageModal({ isOpen, onClose }: MessageModalProps) {
   const { data: session } = useSession();
   const [message, setMessage] = useState("");
@@ -95,7 +105,7 @@ export function MessageModal({ isOpen, onClose }: MessageModalProps) {
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {messages.map((msg: any) => (
+            {messages.map((msg: Message) => (
               <div
                 key={msg.id}
                 className={`flex items-end space-x-2 ${

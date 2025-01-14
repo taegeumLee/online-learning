@@ -18,9 +18,10 @@ export async function PUT(req: Request) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("Error:", error);
     return NextResponse.json(
-      { error: "Failed to update status" },
+      { error: "Failed to fetch status" },
       { status: 500 }
     );
   }

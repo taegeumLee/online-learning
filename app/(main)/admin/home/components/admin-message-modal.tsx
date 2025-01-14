@@ -17,6 +17,16 @@ interface AdminMessageModalProps {
   onClose: () => void;
 }
 
+interface Message {
+  id: string;
+  content: string;
+  senderId: string;
+  createdAt: string;
+  sender: {
+    name: string;
+  };
+}
+
 export function AdminMessageModal({ isOpen, onClose }: AdminMessageModalProps) {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [message, setMessage] = useState("");
@@ -151,7 +161,7 @@ export function AdminMessageModal({ isOpen, onClose }: AdminMessageModalProps) {
             {selectedStudent ? (
               <>
                 <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                  {messages.map((msg: any) => (
+                  {messages.map((msg: Message) => (
                     <div
                       key={msg.id}
                       className={`flex items-end space-x-2 ${

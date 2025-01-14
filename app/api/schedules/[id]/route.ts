@@ -68,7 +68,8 @@ export async function DELETE(
     });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("Error:", error);
     return NextResponse.json(
       { error: "Failed to delete schedule" },
       { status: 500 }

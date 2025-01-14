@@ -27,7 +27,8 @@ export async function GET() {
 
     const latestTextbookId = user?.textbooks[0]?.id || null;
     return NextResponse.json({ textbookId: latestTextbookId });
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch latest textbook" },
       { status: 500 }

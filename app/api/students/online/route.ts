@@ -23,7 +23,8 @@ export async function GET() {
     });
 
     return NextResponse.json(students);
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch online students" },
       { status: 500 }

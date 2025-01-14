@@ -21,9 +21,10 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(message);
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("Error:", error);
     return NextResponse.json(
-      { error: "Failed to send message" },
+      { error: "Failed to process request" },
       { status: 500 }
     );
   }

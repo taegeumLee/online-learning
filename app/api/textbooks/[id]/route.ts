@@ -35,7 +35,8 @@ export async function GET(
     }
 
     return NextResponse.json(textbook);
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch textbook" },
       { status: 500 }
