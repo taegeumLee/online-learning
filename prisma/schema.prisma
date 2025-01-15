@@ -25,6 +25,8 @@ model User {
   textbooks Textbook[]
   schedules Schedule[]
 
+  paymentDate DateTime?
+
   role             String   @default("user") // user, admin
   teacherId        String?
   isActive         Boolean  @default(true)
@@ -34,6 +36,7 @@ model User {
 
   sentMessages     Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
+  Payment          Payment[]
 }
 
 model Textbook {
@@ -84,4 +87,14 @@ model Message {
   isRead     Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  amount    Int
+  status    String   @default("pending") // pending, paid, overdue
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

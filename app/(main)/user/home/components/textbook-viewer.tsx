@@ -42,6 +42,11 @@ interface Textbook {
   sequence: number;
 }
 
+// sonner import를 dynamic import로 변경
+const Toaster = dynamic(() => import("sonner").then((mod) => mod.Toaster), {
+  ssr: false,
+});
+
 export function TextbookViewer({ textbookId }: TextbookViewerProps) {
   const queryClient = useQueryClient();
 

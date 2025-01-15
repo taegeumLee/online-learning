@@ -36,8 +36,7 @@
         "react-notion-x": "^7.2.5",
         "remark": "^15.0.1",
         "remark-html": "^16.0.1",
-        "sonner": "^1.7.1",
-        "styled-jsx": "^5.1.6"
+        "sonner": "^1.7.1"
       },
       "devDependencies": {
         "@types/bcryptjs": "^2.4.6",
