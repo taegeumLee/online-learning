@@ -13,9 +13,6 @@ export async function GET() {
         price: true,
         paymentDate: true,
         Payment: {
-          orderBy: {
-            createdAt: "desc",
-          },
           take: 1,
           select: {
             status: true,

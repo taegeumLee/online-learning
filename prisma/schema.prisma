@@ -25,7 +25,7 @@ model User {
   textbooks Textbook[]
   schedules Schedule[]
 
-  paymentDate DateTime?
+  paymentDate Int? // 1-31 사이의 일자만 저장
 
   role             String   @default("user") // user, admin
   teacherId        String?

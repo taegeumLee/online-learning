@@ -7,10 +7,9 @@ import {
   FiAlertCircle,
   FiCheckCircle,
   FiList,
+  FiFilter,
 } from "react-icons/fi";
 import { HiCurrencyDollar } from "react-icons/hi";
-import { format, parseISO, getDate } from "date-fns";
-import { ko } from "date-fns/locale";
 
 interface Payment {
   status: "pending" | "paid" | "overdue";
@@ -22,7 +21,7 @@ interface User {
   id: string;
   name: string;
   price: number;
-  paymentDate: string | null;
+  paymentDate: number | null;
   Payment: Payment[];
 }
 
@@ -31,6 +30,7 @@ export default function PaymentManagement() {
   const [overdueStudents, setOverdueStudents] = useState<User[]>([]);
   const [totalStudents, setTotalStudents] = useState<number>(0);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [showAllStudents, setShowAllStudents] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -41,14 +41,48 @@ export default function PaymentManagement() {
         const unpaid: User[] = [];
         const overdue: User[] = [];
 
+        const sortByPaymentDay = (a: User, b: User) => {
+          const isValidDay = (day: number | null) =>
+            day !== null && day >= 1 && day <= 31;
+
+          const dayA = isValidDay(a.paymentDate) ? a.paymentDate! : 32;
+          const dayB = isValidDay(b.paymentDate) ? b.paymentDate! : 32;
+          return dayA - dayB;
+        };
+
+        const today = new Date().getDate();
+
         data.forEach((student: User) => {
           const latestPayment = student.Payment[0];
+          const paymentDay = student.paymentDate;
+
           if (!latestPayment || latestPayment.status === "pending") {
-            unpaid.push(student);
+            if (paymentDay && today >= paymentDay) {
+              unpaid.push(student);
+            } else if (paymentDay && today < paymentDay) {
+              const lastMonth = new Date();
+              lastMonth.setMonth(lastMonth.getMonth() - 1);
+              const lastMonthPayment = student.Payment.find((payment) => {
+                const paymentDate = new Date(payment.createdAt);
+                return (
+                  paymentDate.getMonth() === lastMonth.getMonth() &&
+                  paymentDate.getFullYear() === lastMonth.getFullYear()
+                );
+              });
+
+              if (!lastMonthPayment || lastMonthPayment.status === "pending") {
+                unpaid.push(student);
+              }
+            } else if (showAllStudents) {
+              unpaid.push(student);
+            }
           } else if (latestPayment.status === "overdue") {
             overdue.push(student);
           }
         });
+
+        unpaid.sort(sortByPaymentDay);
+        overdue.sort(sortByPaymentDay);
 
         setUnpaidStudents(unpaid);
         setOverdueStudents(overdue);
@@ -59,7 +93,7 @@ export default function PaymentManagement() {
     };
 
     fetchStudents();
-  }, []);
+  }, [showAllStudents]);
 
   const getStatusIcon = (status: "paid" | "overdue") => {
     switch (status) {
@@ -102,6 +136,8 @@ export default function PaymentManagement() {
       setOverdueStudents(overdue);
       setTotalStudents(data.length);
       setRemovingId(null);
+
+      window.dispatchEvent(new Event("paymentCompleted"));
     } catch (error) {
       console.error("Failed to complete payment:", error);
       setRemovingId(null);
@@ -116,9 +152,10 @@ export default function PaymentManagement() {
     status: "unpaid" | "overdue";
   }) => {
     const latestPayment = student.Payment[0];
-    const paymentDay = student.paymentDate
-      ? getDate(parseISO(student.paymentDate))
-      : null;
+    const paymentDay = student.paymentDate;
+
+    const isValidPaymentDay =
+      paymentDay !== null && paymentDay >= 1 && paymentDay <= 31;
 
     const displayAmount = latestPayment?.amount ?? student.price;
 
@@ -140,9 +177,9 @@ export default function PaymentManagement() {
             />
             <span className="font-medium">
               {student.name}
-              {paymentDay && (
+              {isValidPaymentDay && (
                 <span className="ml-2 text-sm text-gray-500">
-                  (매월 {paymentDay}일)
+                  {paymentDay}일
                 </span>
               )}
             </span>
@@ -246,10 +283,24 @@ export default function PaymentManagement() {
           결제 관리
         </h2>
         <div className="flex items-center gap-3">
-          <div className="bg-blue-50 px-3 py-1.5 rounded-md flex items-center gap-2 text-blue-600 text-sm">
+          <div className="bg-red-50 px-3 py-1.5 rounded-md flex items-center gap-2 text-red-600 text-sm">
             <FiUsers className="text-lg" />
-            <span>총 {totalStudents}명</span>
+            <span>{totalStudents}</span>
           </div>
+          <button
+            onClick={() => setShowAllStudents(!showAllStudents)}
+            className={`w-8 h-8 rounded-md flex items-center justify-center border transition-colors relative group ${
+              showAllStudents
+                ? "bg-blue-500 text-white border-blue-500"
+                : "bg-white text-blue-600 border-blue-500"
+            }`}
+            title={showAllStudents ? "결제일 지난 학생만" : "전체 학생 보기"}
+          >
+            <FiFilter className="text-lg" />
+            <span className="absolute -bottom-8 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              {showAllStudents ? "결제일 지난 학생만" : "전체 학생 보기"}
+            </span>
+          </button>
           <button
             onClick={() => (window.location.href = "/admin/payments")}
             className="w-8 h-8 rounded-md flex items-center justify-center border border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white transition-all duration-200 relative group"

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import PaymentManagement from "./components/PaymentManagement";
+import RevenueStats from "./components/RevenueStats";
 
 export default function Manage() {
   const itemVariants = {
@@ -45,7 +46,7 @@ export default function Manage() {
         whileTap="tap"
         {...hoverVariants}
       >
-        <div className="h-full">왼쪽 섹션</div>
+        <RevenueStats />
       </motion.div>
 
       {/* 오른쪽 섹션들 */}
