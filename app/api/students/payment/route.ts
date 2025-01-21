@@ -5,18 +5,31 @@ export async function POST(request: Request) {
   try {
     const { userId } = await request.json();
 
-    // 결제 완료 처리 - paymentDate는 변경하지 않음
-    await prisma.payment.create({
-      data: {
+    // 가장 최근의 payment를 찾아서 status를 paid로 업데이트
+    const latestPayment = await prisma.payment.findFirst({
+      where: {
         userId,
+        status: "pending",
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    if (!latestPayment) {
+      return NextResponse.json(
+        { error: "No pending payment found" },
+        { status: 404 }
+      );
+    }
+
+    // payment 상태 업데이트
+    await prisma.payment.update({
+      where: {
+        id: latestPayment.id,
+      },
+      data: {
         status: "paid",
-        amount:
-          (
-            await prisma.user.findUnique({
-              where: { id: userId },
-              select: { price: true },
-            })
-          )?.price || 0,
       },
     });
 

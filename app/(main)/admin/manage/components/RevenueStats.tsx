@@ -94,22 +94,13 @@ export default function RevenueStats() {
       </h2>
 
       {/* 총 매출 */}
-      <div className="bg-blue-50 p-4 rounded-lg mb-4">
-        <div className="text-sm text-blue-600 mb-1">총 매출</div>
-        <div className="flex items-center justify-between">
-          <div className="text-2xl font-bold text-blue-700 flex items-center gap-1">
-            <HiCurrencyDollar className="text-3xl" />
-            {revenueData.totalRevenue.toLocaleString()}원
-          </div>
-          <div className="text-sm text-blue-600">
-            총 {revenueData.paymentCount}건
-          </div>
-        </div>
-        {/* 지난달 대비 변화 */}
-        <div className="mt-2 text-sm flex items-center gap-2">
-          <span className="text-gray-600">지난달 대비</span>
-          <div
-            className={`flex items-center gap-1 ${
+      <div className="bg-blue-50 p-4 rounded-lg mb-4 ">
+        <div className="flex gap-1 items-center mb-3">
+          <span className="text-xl font-bold text-blue-600">총 매출</span>
+          {/* 지난달 대비 변화 */}
+          <span className="text-xs text-gray-600">지난달 대비</span>
+          <span
+            className={`text-xs ${
               revenueData.revenueChange >= 0 ? "text-green-600" : "text-red-600"
             }`}
           >
@@ -121,6 +112,15 @@ export default function RevenueStats() {
                 {revenueData.revenueChangePercentage}%)
               </span>
             )}
+          </span>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="text-2xl font-bold text-blue-700 flex items-center gap-1">
+            <HiCurrencyDollar className="text-3xl" />
+            {revenueData.totalRevenue.toLocaleString()}원
+          </div>
+          <div className="text-sm text-blue-600">
+            총 {revenueData.paymentCount}건
           </div>
         </div>
       </div>

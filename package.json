@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "prisma generate",
-    "prisma:push": "prisma db push"
+    "prisma:push": "prisma db push",
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
@@ -32,6 +33,7 @@
     "notion-client": "^7.1.5",
     "notion-to-md": "^3.1.4",
     "notion-utils": "^7.1.5",
+    "oidc-token-hash": "^5.0.3",
     "prisma": "^6.2.0",
     "prismjs": "^1.29.0",
     "react": "19.0.0-rc-66855b96-20241106",
@@ -42,6 +44,9 @@
     "react-notion-x": "^7.2.5",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
+    "simple-peer": "^9.11.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "sonner": "^1.7.1",
     "styled-jsx": "^5.1.6"
   },
@@ -51,6 +56,7 @@
     "@types/react": "^18",
     "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "^18",
+    "@types/simple-peer": "^9.11.8",
     "@typescript-eslint/eslint-plugin": "^8.19.1",
     "@typescript-eslint/parser": "^8.19.1",
     "autoprefixer": "^10.4.20",
@@ -60,6 +66,7 @@
     "next-auth": "^4.24.11",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
