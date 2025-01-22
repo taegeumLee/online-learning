@@ -194,7 +194,7 @@ export default function TextbookManagement() {
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             {textbooks.length > 0 ? (
               textbooks.map((textbook) => (
                 <div
@@ -210,30 +210,29 @@ export default function TextbookManagement() {
                               textbook.course.name === "숙련자"
                                 ? "bg-rose-100 text-rose-600"
                                 : "bg-blue-100 text-blue-700"
-                            } px-2 py-1 rounded`}
+                            } px-2 py-1 rounded whitespace-nowrap`}
                           >
                             {textbook.course.name}
                           </span>
                         </>
                       )}
                     </div>
-                    <div>
-                      <h3 className="font-medium text-gray-900">
+                    <div className="min-w-0">
+                      <h3 className="font-medium text-gray-900 truncate">
                         {textbook.title}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 truncate">
                           {textbook.author}
                         </p>
-
-                        <span className="text-gray-300">|</span>
-                        <span className="text-sm text-gray-600">
+                        <span className="text-gray-300 flex-shrink-0">|</span>
+                        <span className="text-sm text-gray-600 flex-shrink-0">
                           Level {textbook.level}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => {
                         setSelectedTextbook(textbook);
@@ -248,7 +247,7 @@ export default function TextbookManagement() {
                 </div>
               ))
             ) : (
-              <div className="text-center text-gray-500 py-8">
+              <div className="col-span-2 text-center text-gray-500 py-8">
                 교재가 없습니다.
               </div>
             )}
