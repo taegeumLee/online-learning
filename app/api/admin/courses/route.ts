@@ -3,32 +3,37 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    // 모든 코스 가져오기
-    const allCourses = await prisma.course.findMany({
+    // 실제 사용 중인 모든 코스 가져오기 (textbook과 연결된 코스만)
+    const coursesInUse = await prisma.course.findMany({
+      where: {
+        Textbook: {
+          some: {}, // textbook이 하나라도 있는 코스만
+        },
+      },
+      distinct: ["name"], // 중복된 이름 제거
       orderBy: {
         name: "asc",
       },
     });
 
-    // name이 중복된 코스 제거 (첫 번째 항목만 유지)
-    const uniqueCourses = allCourses.reduce<typeof allCourses>(
-      (acc, current) => {
-        const exists = acc.find((course) => course.name === current.name);
-        if (!exists) {
-          acc.push(current);
-        }
-        return acc;
+    // 실제 사용 중인 과목 목록 가져오기
+    const subjectsInUse = await prisma.course.findMany({
+      where: {
+        Textbook: {
+          some: {},
+        },
       },
-      []
-    );
+      select: {
+        subject: true,
+      },
+      distinct: ["subject"],
+      orderBy: {
+        subject: "asc",
+      },
+    });
 
-    // 과목 목록 (중복 제거)
-    const subjects = [
-      ...new Set(uniqueCourses.map((course) => course.subject)),
-    ];
-
-    // 모든 교재의 레벨 가져오기 (중복 제거)
-    const textbooks = await prisma.textbook.findMany({
+    // 실제 사용 중인 레벨 가져오기
+    const levelsInUse = await prisma.textbook.findMany({
       select: {
         level: true,
       },
@@ -38,12 +43,10 @@ export async function GET() {
       },
     });
 
-    const levels = textbooks.map((t) => t.level);
-
     return NextResponse.json({
-      courses: uniqueCourses,
-      subjects,
-      levels,
+      courses: coursesInUse,
+      subjects: subjectsInUse.map((s) => s.subject),
+      levels: levelsInUse.map((l) => l.level),
     });
   } catch (error) {
     console.error("Failed to fetch courses:", error);

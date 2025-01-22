@@ -28,7 +28,7 @@ export async function GET(request: Request) {
 
     if (subject && subject !== "all") {
       whereClause.course = {
-        subject,
+        subject: subject,
       };
     }
 

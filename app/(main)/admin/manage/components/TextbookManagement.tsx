@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiBook, FiPlus, FiFilter, FiTrash2, FiEye } from "react-icons/fi";
+import { FiBook, FiPlus, FiFilter, FiEye } from "react-icons/fi";
 import AddTextbookModal from "./AddTextbookModal";
 import ViewTextbookModal from "./ViewTextbookModal";
 import { useSession } from "next-auth/react";
@@ -95,22 +95,6 @@ export default function TextbookManagement() {
     return selectedCourse ? [selectedCourse.subject] : [];
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("정말 삭제하시겠습니까?")) return;
-
-    try {
-      const response = await fetch(`/api/admin/textbooks/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete textbook");
-
-      fetchTextbooks();
-    } catch (error) {
-      console.error("Failed to delete textbook:", error);
-    }
-  };
-
   const handleAddTextbook = async (data: any) => {
     try {
       const response = await fetch("/api/admin/textbooks", {
@@ -136,21 +120,20 @@ export default function TextbookManagement() {
     <>
       <div className="h-full flex flex-col">
         <div className="flex flex-col gap-4 mb-4">
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <FiBook className="text-blue-500" />
-            교재 관리
-          </h2>
-          <div className="flex flex-col gap-3">
-            {/* 필터 영역 */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <FiBook className="text-blue-500" />
+              교재 관리
+            </h2>
+
             <div className="flex items-center gap-3">
-              {/* 코스 필터 */}
               <select
                 value={filterCourse}
                 onChange={(e) => {
                   setFilterCourse(e.target.value);
                   setFilterSubject("all");
                 }}
-                className="w-40 px-3 py-1.5 rounded-md border border-gray-300 text-sm"
+                className="w-30 px-3 py-1.5 rounded-md border border-gray-300 text-sm"
               >
                 <option value="all">전체 코스</option>
                 {courseData.courses.map((course) => (
@@ -160,11 +143,10 @@ export default function TextbookManagement() {
                 ))}
               </select>
 
-              {/* 과목 필터 */}
               <select
                 value={filterSubject}
                 onChange={(e) => setFilterSubject(e.target.value)}
-                className="w-40 px-3 py-1.5 rounded-md border border-gray-300 text-sm"
+                className="w-30 px-3 py-1.5 rounded-md border border-gray-300 text-sm"
               >
                 <option value="all">전체 과목</option>
                 {getFilteredSubjects().map((subject) => (
@@ -174,7 +156,6 @@ export default function TextbookManagement() {
                 ))}
               </select>
 
-              {/* 레벨 필터 */}
               <select
                 value={filterLevel}
                 onChange={(e) =>
@@ -182,7 +163,7 @@ export default function TextbookManagement() {
                     e.target.value === "all" ? "all" : Number(e.target.value)
                   )
                 }
-                className="w-40 px-3 py-1.5 rounded-md border border-gray-300 text-sm"
+                className="w-30 px-3 py-1.5 rounded-md border border-gray-300 text-sm"
               >
                 <option value="all">전체 레벨</option>
                 {courseData.levels.map((level) => (
@@ -192,28 +173,26 @@ export default function TextbookManagement() {
                 ))}
               </select>
             </div>
+          </div>
 
-            {/* 검색과 추가 버튼 */}
-            <div className="flex items-center gap-3">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="교재명 검색"
-                className="flex-1 px-3 py-1.5 rounded-md border border-gray-300 text-sm"
-              />
-              <button
-                onClick={() => setIsAddModalOpen(true)}
-                className="px-3 py-1.5 rounded-md bg-blue-500 text-white text-sm flex items-center gap-1.5 hover:bg-blue-600 transition-colors whitespace-nowrap"
-              >
-                <FiPlus />
-                교재 추가
-              </button>
-            </div>
+          <div className="flex items-center gap-3">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="교재명 검색"
+              className="flex-1 px-3 py-1.5 rounded-md border border-gray-300 text-sm"
+            />
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="px-3 py-1.5 rounded-md bg-blue-500 text-white text-sm flex items-center gap-1.5 hover:bg-blue-600 transition-colors whitespace-nowrap"
+            >
+              <FiPlus />
+              교재 추가
+            </button>
           </div>
         </div>
 
-        {/* 교재 목록 */}
         <div className="flex-1 overflow-y-auto">
           <div className="grid grid-cols-1 gap-3">
             {textbooks.length > 0 ? (
@@ -224,9 +203,19 @@ export default function TextbookManagement() {
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex-shrink-0">
-                      <span className="text-sm font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                        Level {textbook.level}
-                      </span>
+                      {textbook.course && (
+                        <>
+                          <span
+                            className={`text-sm font-medium bg-blue-100 ${
+                              textbook.course.name === "숙련자"
+                                ? "bg-rose-100 text-rose-600"
+                                : "bg-blue-100 text-blue-700"
+                            } px-2 py-1 rounded`}
+                          >
+                            {textbook.course.name}
+                          </span>
+                        </>
+                      )}
                     </div>
                     <div>
                       <h3 className="font-medium text-gray-900">
@@ -236,14 +225,11 @@ export default function TextbookManagement() {
                         <p className="text-sm text-gray-600">
                           {textbook.author}
                         </p>
-                        {textbook.course && (
-                          <>
-                            <span className="text-gray-300">|</span>
-                            <span className="text-sm text-gray-600">
-                              {textbook.course.name}
-                            </span>
-                          </>
-                        )}
+
+                        <span className="text-gray-300">|</span>
+                        <span className="text-sm text-gray-600">
+                          Level {textbook.level}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -257,13 +243,6 @@ export default function TextbookManagement() {
                       title="교재 보기"
                     >
                       <FiEye />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(textbook.id)}
-                      className="p-2 text-gray-600 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
-                      title="교재 삭제"
-                    >
-                      <FiTrash2 />
                     </button>
                   </div>
                 </div>
