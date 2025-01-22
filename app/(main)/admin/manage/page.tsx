@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import PaymentManagement from "./components/PaymentManagement";
 import RevenueStats from "./components/RevenueStats";
+import TextbookManagement from "./components/TextbookManagement";
 
 export default function Manage() {
   const itemVariants = {
@@ -38,9 +39,9 @@ export default function Manage() {
 
   return (
     <div className="flex w-full h-screen p-4 gap-4">
-      {/* 왼쪽 섹션 */}
+      {/* 왼쪽 섹션 - 너비 줄임 */}
       <motion.div
-        className="w-1/3 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow h-full overflow-auto scrollbar-hide border border-border-light"
+        className="w-1/4 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow h-full overflow-auto scrollbar-hide border border-border-light"
         variants={itemVariants}
         whileHover="hover"
         whileTap="tap"
@@ -49,10 +50,10 @@ export default function Manage() {
         <RevenueStats />
       </motion.div>
 
-      {/* 오른쪽 섹션들 */}
-      <div className="w-2/3 grid grid-cols-2 grid-rows-3 gap-4 h-full">
+      {/* 오른쪽 섹션들 - 너비 늘림 */}
+      <div className="w-3/4 grid grid-cols-5 grid-rows-3 gap-4 h-full">
         <motion.div
-          className="bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow overflow-auto scrollbar-hide border border-border-light"
+          className="col-span-2 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow overflow-auto scrollbar-hide border border-border-light"
           variants={itemVariants}
           whileHover="hover"
           whileTap="tap"
@@ -60,10 +61,19 @@ export default function Manage() {
         >
           <PaymentManagement />
         </motion.div>
-        {[2, 3, 4, 5, 6].map((section) => (
+        <motion.div
+          className="col-span-3 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow overflow-auto scrollbar-hide border border-border-light"
+          variants={itemVariants}
+          whileHover="hover"
+          whileTap="tap"
+          {...hoverVariants}
+        >
+          <TextbookManagement />
+        </motion.div>
+        {[3, 4, 5, 6].map((section) => (
           <motion.div
             key={section}
-            className="bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow overflow-auto scrollbar-hide border border-border-light"
+            className="col-span-1 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow overflow-auto scrollbar-hide border border-border-light"
             variants={itemVariants}
             whileHover="hover"
             whileTap="tap"
