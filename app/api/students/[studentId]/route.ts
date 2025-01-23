@@ -1,12 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: { studentId: string } }
-) {
+export async function PATCH(request: Request) {
   try {
-    const { studentId } = params;
+    // URL에서 studentId 추출
+    const studentId = request.url.split("/").pop();
+    if (!studentId) {
+      return NextResponse.json(
+        { error: "Student ID is required" },
+        { status: 400 }
+      );
+    }
+
     const data = await request.json();
 
     const student = await prisma.user.update({

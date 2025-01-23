@@ -3,13 +3,17 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: Request) {
   try {
-    params = await params;
-    const id = params.id;
+    // URL에서 id 추출
+    const id = request.url.split("/").pop();
+    if (!id) {
+      return NextResponse.json(
+        { error: "Textbook ID is required" },
+        { status: 400 }
+      );
+    }
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -37,27 +37,25 @@ export default function StudentManagement() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
-    fetchStudents();
+    const fetchStudentsData = async () => {
+      try {
+        const params = new URLSearchParams();
+        if (searchQuery) params.append("search", searchQuery);
+        if (statusFilter !== "all") params.append("status", statusFilter);
+
+        const response = await fetch(`/api/students?${params.toString()}`);
+        const data = await response.json();
+        setStudents(data);
+      } catch (error) {
+        console.error("Failed to fetch students:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudentsData();
     fetchTeachers();
   }, [searchQuery, statusFilter]);
-
-  const fetchStudents = async () => {
-    try {
-      const params = new URLSearchParams();
-      if (searchQuery) params.append("search", searchQuery);
-      if (statusFilter !== "all") params.append("status", statusFilter);
-
-      const response = await fetch(`/api/students?${params.toString()}`);
-      if (!response.ok) throw new Error("Failed to fetch students");
-
-      const data = await response.json();
-      setStudents(data);
-    } catch (error) {
-      console.error("Failed to fetch students:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const fetchTeachers = async () => {
     try {
@@ -98,7 +96,17 @@ export default function StudentManagement() {
         throw new Error("Failed to update student");
       }
 
-      await fetchStudents();
+      const fetchStudentsData = async () => {
+        const params = new URLSearchParams();
+        if (searchQuery) params.append("search", searchQuery);
+        if (statusFilter !== "all") params.append("status", statusFilter);
+
+        const response = await fetch(`/api/students?${params.toString()}`);
+        const data = await response.json();
+        setStudents(data);
+      };
+
+      await fetchStudentsData();
       setIsEditModalOpen(false);
       setSelectedStudent(null);
 

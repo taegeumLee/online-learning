@@ -72,26 +72,29 @@ export default function TextbookManagement() {
   }, []);
 
   useEffect(() => {
-    fetchTextbooks();
+    const fetchTextbooksData = async () => {
+      try {
+        const params = new URLSearchParams();
+        if (filterCourse !== "all") params.append("courseId", filterCourse);
+        if (filterSubject !== "all") params.append("subject", filterSubject);
+        if (filterLevel !== "all")
+          params.append("level", filterLevel.toString());
+        if (searchQuery) params.append("search", searchQuery);
+
+        const response = await fetch(
+          `/api/admin/textbooks?${params.toString()}`
+        );
+        const data = await response.json();
+        setTextbooks(data);
+      } catch (error) {
+        console.error("Failed to fetch textbooks:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTextbooksData();
   }, [filterCourse, filterSubject, filterLevel, searchQuery]);
-
-  const fetchTextbooks = async () => {
-    try {
-      const params = new URLSearchParams();
-      if (filterCourse !== "all") params.append("courseId", filterCourse);
-      if (filterSubject !== "all") params.append("subject", filterSubject);
-      if (filterLevel !== "all") params.append("level", filterLevel.toString());
-      if (searchQuery) params.append("search", searchQuery);
-
-      const response = await fetch(`/api/admin/textbooks?${params.toString()}`);
-      const data = await response.json();
-      setTextbooks(data);
-    } catch (error) {
-      console.error("Failed to fetch textbooks:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // 현재 선택된 코스의 과목 가져오기
   const getFilteredSubjects = () => {
@@ -116,7 +119,22 @@ export default function TextbookManagement() {
 
       if (!response.ok) throw new Error("Failed to add textbook");
 
-      fetchTextbooks();
+      const fetchTextbooksData = async () => {
+        const params = new URLSearchParams();
+        if (filterCourse !== "all") params.append("courseId", filterCourse);
+        if (filterSubject !== "all") params.append("subject", filterSubject);
+        if (filterLevel !== "all")
+          params.append("level", filterLevel.toString());
+        if (searchQuery) params.append("search", searchQuery);
+
+        const response = await fetch(
+          `/api/admin/textbooks?${params.toString()}`
+        );
+        const data = await response.json();
+        setTextbooks(data);
+      };
+
+      await fetchTextbooksData();
       setIsAddModalOpen(false);
     } catch (error) {
       console.error("Failed to add textbook:", error);

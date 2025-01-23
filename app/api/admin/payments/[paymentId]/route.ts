@@ -1,16 +1,18 @@
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-interface RouteParams {
-  params: {
-    paymentId: string;
-  };
-}
-
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+export async function PATCH(request: Request) {
   try {
-    const { paymentId } = params;
+    // URL에서 paymentId 추출
+    const paymentId = request.url.split("/").pop();
     const { status } = await request.json();
+
+    if (!paymentId) {
+      return NextResponse.json(
+        { error: "Payment ID is required" },
+        { status: 400 }
+      );
+    }
 
     const payment = await prisma.payment.update({
       where: {
