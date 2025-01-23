@@ -29,6 +29,15 @@ interface CourseData {
   levels: number[];
 }
 
+interface TextbookFormData {
+  title: string;
+  author: string;
+  level: number;
+  url: string;
+  sequence: number;
+  courseId: string;
+}
+
 export default function TextbookManagement() {
   const { data: session } = useSession();
   const [textbooks, setTextbooks] = useState<Textbook[]>([]);
@@ -95,7 +104,7 @@ export default function TextbookManagement() {
     return selectedCourse ? [selectedCourse.subject] : [];
   };
 
-  const handleAddTextbook = async (data: any) => {
+  const handleAddTextbook = async (data: TextbookFormData) => {
     try {
       const response = await fetch("/api/admin/textbooks", {
         method: "POST",
