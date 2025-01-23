@@ -1,20 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-export async function GET(request: Request) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { studentId: string } }
+) {
+  const { studentId } = params;
+
   try {
-    // URL에서 studentId 추출
-    const studentId = request.url.split("/").pop();
-
-    if (!studentId) {
-      return NextResponse.json(
-        { error: "Student ID is required" },
-        { status: 400 }
-      );
-    }
-
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

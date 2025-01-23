@@ -4,23 +4,18 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
 // 수업 일정 수정
-export async function PUT(request: Request) {
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // URL에서 id 추출
-    const id = request.url.split("/").pop();
-    if (!id) {
-      return NextResponse.json(
-        { error: "Schedule ID is required" },
-        { status: 400 }
-      );
-    }
-
-    const { startAt, endAt, status } = await request.json();
+    const { startAt, endAt, status } = await req.json();
+    const { id } = params;
 
     const schedule = await prisma.schedule.update({
       where: {
@@ -53,20 +48,17 @@ export async function PUT(request: Request) {
 }
 
 // 수업 일정 삭제
-export async function DELETE(request: Request) {
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const id = request.url.split("/").pop();
-    if (!id) {
-      return NextResponse.json(
-        { error: "Schedule ID is required" },
-        { status: 400 }
-      );
-    }
+    const { id } = params;
 
     await prisma.schedule.delete({
       where: {

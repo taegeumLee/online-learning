@@ -1,18 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { subMonths } from "date-fns";
-
-interface PaymentWhereClause {
-  createdAt?: {
-    gte: Date;
-  };
-  status?: string;
-  user?: {
-    name?: {
-      contains: string;
-    };
-  };
-}
+import { startOfMonth, endOfMonth, subMonths } from "date-fns";
 
 export async function GET(request: Request) {
   try {
@@ -21,7 +9,7 @@ export async function GET(request: Request) {
     const status = searchParams.get("status");
     const search = searchParams.get("search");
 
-    const whereClause: PaymentWhereClause = {};
+    let whereClause: any = {};
 
     // 기간 필터
     if (!showAll) {

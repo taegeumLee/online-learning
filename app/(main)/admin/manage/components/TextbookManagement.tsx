@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiBook, FiPlus, FiEye } from "react-icons/fi";
+import { FiBook, FiPlus, FiFilter, FiEye } from "react-icons/fi";
 import AddTextbookModal from "./AddTextbookModal";
 import ViewTextbookModal from "./ViewTextbookModal";
 import { useSession } from "next-auth/react";
@@ -27,15 +27,6 @@ interface CourseData {
   courses: Course[];
   subjects: string[];
   levels: number[];
-}
-
-interface TextbookFormData {
-  title: string;
-  author: string;
-  level: number;
-  url: string;
-  sequence: number;
-  courseId: string;
 }
 
 export default function TextbookManagement() {
@@ -72,29 +63,26 @@ export default function TextbookManagement() {
   }, []);
 
   useEffect(() => {
-    const fetchTextbooksData = async () => {
-      try {
-        const params = new URLSearchParams();
-        if (filterCourse !== "all") params.append("courseId", filterCourse);
-        if (filterSubject !== "all") params.append("subject", filterSubject);
-        if (filterLevel !== "all")
-          params.append("level", filterLevel.toString());
-        if (searchQuery) params.append("search", searchQuery);
-
-        const response = await fetch(
-          `/api/admin/textbooks?${params.toString()}`
-        );
-        const data = await response.json();
-        setTextbooks(data);
-      } catch (error) {
-        console.error("Failed to fetch textbooks:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTextbooksData();
+    fetchTextbooks();
   }, [filterCourse, filterSubject, filterLevel, searchQuery]);
+
+  const fetchTextbooks = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (filterCourse !== "all") params.append("courseId", filterCourse);
+      if (filterSubject !== "all") params.append("subject", filterSubject);
+      if (filterLevel !== "all") params.append("level", filterLevel.toString());
+      if (searchQuery) params.append("search", searchQuery);
+
+      const response = await fetch(`/api/admin/textbooks?${params.toString()}`);
+      const data = await response.json();
+      setTextbooks(data);
+    } catch (error) {
+      console.error("Failed to fetch textbooks:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 현재 선택된 코스의 과목 가져오기
   const getFilteredSubjects = () => {
@@ -107,7 +95,7 @@ export default function TextbookManagement() {
     return selectedCourse ? [selectedCourse.subject] : [];
   };
 
-  const handleAddTextbook = async (data: TextbookFormData) => {
+  const handleAddTextbook = async (data: any) => {
     try {
       const response = await fetch("/api/admin/textbooks", {
         method: "POST",
@@ -119,22 +107,7 @@ export default function TextbookManagement() {
 
       if (!response.ok) throw new Error("Failed to add textbook");
 
-      const fetchTextbooksData = async () => {
-        const params = new URLSearchParams();
-        if (filterCourse !== "all") params.append("courseId", filterCourse);
-        if (filterSubject !== "all") params.append("subject", filterSubject);
-        if (filterLevel !== "all")
-          params.append("level", filterLevel.toString());
-        if (searchQuery) params.append("search", searchQuery);
-
-        const response = await fetch(
-          `/api/admin/textbooks?${params.toString()}`
-        );
-        const data = await response.json();
-        setTextbooks(data);
-      };
-
-      await fetchTextbooksData();
+      fetchTextbooks();
       setIsAddModalOpen(false);
     } catch (error) {
       console.error("Failed to add textbook:", error);

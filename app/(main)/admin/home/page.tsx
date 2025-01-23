@@ -2,7 +2,11 @@
 
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { IoCalendarOutline, IoRefreshOutline } from "react-icons/io5";
+import {
+  IoCalendarOutline,
+  IoRefreshOutline,
+  IoChatboxOutline,
+} from "react-icons/io5";
 
 import { useState, useEffect } from "react";
 import Calendar from "./components/calendar";
@@ -12,7 +16,9 @@ import { AdminMessageModal } from "./components/admin-message-modal";
 type Student = {
   id: string;
   name: string;
+  course: string;
   isActive: boolean;
+  lastAccess: string;
   textbookTitle: string;
   courseSubject: string;
   nextSchedule: string;
@@ -102,7 +108,7 @@ export default function Home() {
   const onlineCount = students.filter((s: Student) => s.isActive).length;
 
   return (
-    <div className="flex w-full h-[calc(100vh-5rem)] p-4 gap-4">
+    <div className="flex w-full h-screen p-4 gap-4">
       {/* 왼쪽 학생 목록 */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -124,6 +130,7 @@ export default function Home() {
               className="p-2 text-gray-600 hover:text-blue-500 transition-colors rounded-full hover:bg-blue-50 relative"
               title="메시지 보내기"
             >
+              <IoChatboxOutline className="w-5 h-5" />
               {unreadMessages?.count > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                   {unreadMessages.count}

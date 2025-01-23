@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-
-interface WhereClause {
-  role: string;
-  OR?: Array<{ name: { contains: string } } | { email: { contains: string } }>;
-  isActive?: boolean;
-}
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function GET(request: Request) {
   try {
@@ -13,7 +9,7 @@ export async function GET(request: Request) {
     const search = searchParams.get("search");
     const status = searchParams.get("status");
 
-    const whereClause: WhereClause = {
+    let whereClause: any = {
       role: "user", // 학생만 가져오기
     };
 

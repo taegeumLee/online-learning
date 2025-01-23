@@ -38,27 +38,25 @@ export default function Payments() {
   }, [searchQuery]);
 
   useEffect(() => {
-    const fetchPaymentsData = async () => {
-      try {
-        const params = new URLSearchParams();
-        if (showAllPayments) params.append("all", "true");
-        if (statusFilter !== "all") params.append("status", statusFilter);
-        if (debouncedQuery) params.append("search", debouncedQuery);
-
-        const response = await fetch(
-          `/api/admin/payments?${params.toString()}`
-        );
-        const data = await response.json();
-        setPayments(data);
-      } catch (error) {
-        console.error("Failed to fetch payments:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPaymentsData();
+    fetchPayments();
   }, [showAllPayments, statusFilter, debouncedQuery]);
+
+  const fetchPayments = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (showAllPayments) params.append("all", "true");
+      if (statusFilter !== "all") params.append("status", statusFilter);
+      if (debouncedQuery) params.append("search", debouncedQuery);
+
+      const response = await fetch(`/api/admin/payments?${params.toString()}`);
+      const data = await response.json();
+      setPayments(data);
+    } catch (error) {
+      console.error("Failed to fetch payments:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const statusOptions: {
     value: PaymentStatus;
@@ -84,20 +82,7 @@ export default function Payments() {
       if (!response.ok) throw new Error("Failed to update payment status");
 
       // 상태 업데이트 후 목록 새로고침
-      const fetchPaymentsData = async () => {
-        const params = new URLSearchParams();
-        if (showAllPayments) params.append("all", "true");
-        if (statusFilter !== "all") params.append("status", statusFilter);
-        if (debouncedQuery) params.append("search", debouncedQuery);
-
-        const response = await fetch(
-          `/api/admin/payments?${params.toString()}`
-        );
-        const data = await response.json();
-        setPayments(data);
-      };
-
-      await fetchPaymentsData();
+      fetchPayments();
     } catch (error) {
       console.error("Failed to update payment status:", error);
     }

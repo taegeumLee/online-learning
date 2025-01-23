@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FiX } from "react-icons/fi";
+import { FiX, FiPlus } from "react-icons/fi";
 
 interface Course {
   id: string;
@@ -9,19 +9,10 @@ interface Course {
   subject: string;
 }
 
-interface TextbookFormData {
-  title: string;
-  level: number;
-  url: string;
-  courseId: string;
-  author: string;
-  sequence: number;
-}
-
 interface AddTextbookModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: TextbookFormData) => void;
+  onSubmit: (data: any) => void;
   courses: Course[];
   currentUser: string;
 }
