@@ -6,7 +6,6 @@ import { FiX } from "react-icons/fi";
 interface Teacher {
   id: string;
   name: string;
-  email: string;
 }
 
 interface Student {
@@ -192,7 +191,7 @@ export default function EditStudentModal({
                   value={teacher.id}
                   selected={formData.teacherId === teacher.id}
                 >
-                  {teacher.name} ({teacher.email})
+                  {teacher.name}
                 </option>
               ))}
             </select>
