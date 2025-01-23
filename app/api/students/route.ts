@@ -3,89 +3,61 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get("search");
+    const status = searchParams.get("status");
+
+    let whereClause: any = {
+      role: "user", // 학생만 가져오기
+    };
+
+    // 검색어로 필터링
+    if (search) {
+      whereClause.OR = [
+        { name: { contains: search } },
+        { email: { contains: search } },
+      ];
+    }
+
+    // 상태로 필터링
+    if (status === "active") {
+      whereClause.isActive = true;
+    } else if (status === "inactive") {
+      whereClause.isActive = false;
     }
 
     const students = await prisma.user.findMany({
-      where: {
-        role: "user",
-      },
+      where: whereClause,
       select: {
         id: true,
         name: true,
+        email: true,
+        price: true,
+        paymentDate: true,
         isActive: true,
-        recentTextbookId: true,
-        schedules: {
-          where: {
-            startAt: {
-              gte: new Date(new Date().setHours(0, 0, 0, 0)),
-            },
-            endAt: {
-              lte: new Date(new Date().setHours(23, 59, 59, 999)),
-            },
-          },
-          orderBy: {
-            startAt: "asc",
-          },
+        teacherId: true,
+        Payment: {
           take: 1,
+          orderBy: {
+            createdAt: "desc",
+          },
           select: {
-            startAt: true,
-            endAt: true,
+            status: true,
+            amount: true,
+            createdAt: true,
           },
         },
       },
+      orderBy: {
+        name: "asc",
+      },
     });
 
-    const formattedStudents = await Promise.all(
-      students.map(async (student) => {
-        let textbookTitle = "교재 없음";
-        let courseSubject = "";
-
-        if (student.recentTextbookId) {
-          const textbook = await prisma.textbook.findUnique({
-            where: {
-              id: student.recentTextbookId,
-            },
-            include: {
-              course: true,
-            },
-          });
-
-          if (textbook) {
-            textbookTitle = textbook.title;
-            courseSubject = textbook.course?.subject || "";
-          }
-        }
-
-        return {
-          id: student.id,
-          name: student.name,
-          isActive: student.isActive,
-          currentTextbookId: student.recentTextbookId,
-          textbookTitle,
-          courseSubject,
-          nextSchedule: student.schedules[0]
-            ? new Date(student.schedules[0].startAt).toLocaleTimeString(
-                "ko-KR",
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }
-              )
-            : "예정된 수업 없음",
-          startAt: student.schedules[0]?.startAt,
-          endAt: student.schedules[0]?.endAt,
-        };
-      })
-    );
-
-    return NextResponse.json(formattedStudents);
+    return NextResponse.json(students);
   } catch (error) {
-    console.error("Error fetching students:", error);
+    console.error("Failed to fetch students:", error);
     return NextResponse.json(
       { error: "Failed to fetch students" },
       { status: 500 }

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import PaymentManagement from "./components/PaymentManagement";
 import RevenueStats from "./components/RevenueStats";
 import TextbookManagement from "./components/TextbookManagement";
+import StudentManagement from "./components/StudentManagement";
 
 export default function Manage() {
   const itemVariants = {
@@ -70,10 +71,23 @@ export default function Manage() {
         >
           <TextbookManagement />
         </motion.div>
-        {[3, 4, 5, 6].map((section) => (
+
+        {/* 학생 관리 섹션 - 3개 칸 너비, 2개 칸 높이 */}
+        <motion.div
+          className="col-span-3 row-span-2 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow overflow-auto scrollbar-hide border border-border-light"
+          variants={itemVariants}
+          whileHover="hover"
+          whileTap="tap"
+          {...hoverVariants}
+        >
+          <StudentManagement />
+        </motion.div>
+
+        {/* 나머지 섹션들 */}
+        {[6].map((section) => (
           <motion.div
             key={section}
-            className="col-span-1 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow overflow-auto scrollbar-hide border border-border-light"
+            className="col-span-2 row-span-2 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow overflow-auto scrollbar-hide border border-border-light"
             variants={itemVariants}
             whileHover="hover"
             whileTap="tap"
