@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiBook, FiPlus, FiFilter, FiEye } from "react-icons/fi";
+import { FiBook, FiPlus, FiEye } from "react-icons/fi";
 import AddTextbookModal from "./AddTextbookModal";
 import ViewTextbookModal from "./ViewTextbookModal";
 import { useSession } from "next-auth/react";

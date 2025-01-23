@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { HiCurrencyDollar } from "react-icons/hi";
-import { FiTrendingUp, FiAward } from "react-icons/fi";
+import { FiTrendingUp } from "react-icons/fi";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";

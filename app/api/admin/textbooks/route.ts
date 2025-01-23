@@ -1,6 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
+interface TextbookWhereClause {
+  courseId?: string;
+  level?: number;
+  OR?: {
+    title: { contains: string };
+  }[];
+  course?: {
+    subject: string;
+  };
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -9,7 +20,7 @@ export async function GET(request: Request) {
     const level = searchParams.get("level");
     const search = searchParams.get("search");
 
-    let whereClause: any = {};
+    const whereClause: TextbookWhereClause = {};
 
     if (courseId && courseId !== "all") {
       whereClause.courseId = courseId;
@@ -20,10 +31,7 @@ export async function GET(request: Request) {
     }
 
     if (search) {
-      whereClause.OR = [
-        { title: { contains: search } },
-        { author: { contains: search } },
-      ];
+      whereClause.OR = [{ title: { contains: search } }];
     }
 
     if (subject && subject !== "all") {
