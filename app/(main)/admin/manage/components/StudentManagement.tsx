@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { FiUsers, FiSearch, FiEdit2, FiCalendar } from "react-icons/fi";
 import EditStudentModal from "./EditStudentModal";
+import { toast } from "sonner";
 
 interface Student {
   id: string;
@@ -100,16 +101,29 @@ export default function StudentManagement() {
       await fetchStudents();
       setIsEditModalOpen(false);
       setSelectedStudent(null);
+
+      toast.success("학생 정보가 수정되었습니다.", {
+        style: {
+          background: "#22c55e",
+          color: "white",
+        },
+      });
     } catch (error) {
       console.error("Failed to update student:", error);
+      toast.error("학생 정보 수정에 실패했습니다.", {
+        style: {
+          background: "#ef4444",
+          color: "white",
+        },
+      });
     }
   };
 
   if (loading) return <div>로딩 중...</div>;
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex justify-between items-center mb-6">
+    <div className="h-full flex flex-col p-4">
+      <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold flex items-center gap-2">
           <FiUsers className="text-blue-500" />
           학생 관리
@@ -140,7 +154,7 @@ export default function StudentManagement() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         <div className="grid gap-3">
           {students.length > 0 ? (
             students.map((student) => (
@@ -188,7 +202,7 @@ export default function StudentManagement() {
                         setIsEditModalOpen(true);
                       }}
                       className="p-2 text-gray-600 hover:text-blue-500 transition-colors rounded-full hover:bg-blue-50"
-                      title="학생 정보 수정"
+                      title="정보 편집하기"
                     >
                       <FiEdit2 />
                     </button>

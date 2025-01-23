@@ -39,7 +39,7 @@ export default function Manage() {
   };
 
   return (
-    <div className="flex w-full h-screen p-4 gap-4">
+    <div className="flex w-full h-[calc(100vh-6rem)] p-4 gap-4">
       {/* 왼쪽 섹션 - 너비 줄임 */}
       <motion.div
         className="w-1/4 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow h-full overflow-auto scrollbar-hide border border-border-light"
@@ -74,7 +74,7 @@ export default function Manage() {
 
         {/* 학생 관리 섹션 - 3개 칸 너비, 2개 칸 높이 */}
         <motion.div
-          className="col-span-3 row-span-2 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow overflow-auto scrollbar-hide border border-border-light"
+          className="col-span-3 row-span-2 bg-background-light rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-border-light h-full"
           variants={itemVariants}
           whileHover="hover"
           whileTap="tap"

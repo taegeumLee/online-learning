@@ -108,7 +108,7 @@ export default function Home() {
   const onlineCount = students.filter((s: Student) => s.isActive).length;
 
   return (
-    <div className="flex w-full h-screen p-4 gap-4">
+    <div className="flex w-full h-[calc(100vh-5rem)] p-4 gap-4">
       {/* 왼쪽 학생 목록 */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
