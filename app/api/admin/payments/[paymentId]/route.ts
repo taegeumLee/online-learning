@@ -1,13 +1,16 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: { paymentId: string } }
-) {
+interface RouteParams {
+  params: {
+    paymentId: string;
+  };
+}
+
+export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
-    const { status } = await request.json();
     const { paymentId } = params;
+    const { status } = await request.json();
 
     const payment = await prisma.payment.update({
       where: {
