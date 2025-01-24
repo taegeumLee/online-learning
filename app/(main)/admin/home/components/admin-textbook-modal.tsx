@@ -150,232 +150,208 @@ export function AdminTextbookModal({
       }));
   };
 
+  if (!isOpen) return null;
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.95 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-surface-light dark:bg-surface-dark rounded-lg shadow-xl w-full max-w-4xl overflow-hidden"
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="bg-white rounded-lg p-6 w-[600px] max-h-[90vh] flex flex-col">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <IoBookOutline className="w-6 h-6" />
+            교재 선택
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-surface-hover-light dark:hover:bg-surface-hover-dark rounded-full"
           >
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold flex items-center gap-2">
-                  <IoBookOutline className="w-6 h-6" />
-                  교재 선택
-                </h2>
-                <button
-                  onClick={onClose}
-                  className="p-2 hover:bg-surface-hover-light dark:hover:bg-surface-hover-dark rounded-full"
-                >
-                  <IoCloseOutline className="w-6 h-6" />
-                </button>
-              </div>
+            <IoCloseOutline className="w-6 h-6" />
+          </button>
+        </div>
 
-              {/* 교재 목록 */}
-              <div className="space-y-4 max-h-[70vh] overflow-y-auto">
-                {Object.entries(courseGroups).map(
-                  ([courseName, courseList]) => (
-                    <div key={courseName}>
-                      <motion.button
-                        onClick={() =>
-                          setExpandedCourse(
-                            expandedCourse === courseName ? null : courseName
-                          )
-                        }
-                        className="w-full flex items-center justify-between p-3 hover:bg-surface-hover-light dark:hover:bg-surface-hover-dark rounded-lg"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{courseName}</span>
-                        </div>
-                        <motion.div
-                          animate={{
-                            rotate: expandedCourse === courseName ? 90 : 0,
-                          }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <IoChevronForward className="w-5 h-5" />
-                        </motion.div>
-                      </motion.button>
-
-                      <AnimatePresence>
-                        {expandedCourse === courseName && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="pl-4 space-y-2">
-                              {groupBySubject(courseList).map(
-                                ({ subject, textbooks }) => (
-                                  <div key={subject}>
-                                    <motion.button
-                                      onClick={() =>
-                                        setExpandedSubject(
-                                          expandedSubject === subject
-                                            ? null
-                                            : subject
-                                        )
-                                      }
-                                      className="w-full flex items-center justify-between p-3 hover:bg-surface-hover-light dark:hover:bg-surface-hover-dark rounded-lg"
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        <span className="font-medium">
-                                          {subject}
-                                        </span>
-                                      </div>
-                                      <motion.div
-                                        animate={{
-                                          rotate:
-                                            expandedSubject === subject
-                                              ? 90
-                                              : 0,
-                                        }}
-                                        transition={{ duration: 0.2 }}
-                                      >
-                                        <IoChevronForward className="w-5 h-5" />
-                                      </motion.div>
-                                    </motion.button>
-
-                                    <AnimatePresence>
-                                      {expandedSubject === subject && (
-                                        <motion.div
-                                          initial={{ height: 0, opacity: 0 }}
-                                          animate={{
-                                            height: "auto",
-                                            opacity: 1,
-                                          }}
-                                          exit={{ height: 0, opacity: 0 }}
-                                          className="overflow-hidden"
-                                        >
-                                          <div className="pl-4 space-y-2">
-                                            {groupTextbooksByLevel(
-                                              textbooks
-                                            ).map(({ level, books }) => (
-                                              <div key={level}>
-                                                <motion.button
-                                                  onClick={() =>
-                                                    setExpandedLevel(level)
-                                                  }
-                                                  className="w-full flex items-center justify-between p-3 hover:bg-surface-hover-light dark:hover:bg-surface-hover-dark rounded-lg"
-                                                >
-                                                  <div className="flex items-center gap-2">
-                                                    <span className="font-medium">
-                                                      Level {level}
-                                                    </span>
-                                                  </div>
-                                                  <motion.div
-                                                    animate={{
-                                                      rotate:
-                                                        expandedLevel === level
-                                                          ? 90
-                                                          : 0,
-                                                    }}
-                                                    transition={{
-                                                      duration: 0.2,
-                                                    }}
-                                                  >
-                                                    <IoChevronForward className="w-5 h-5" />
-                                                  </motion.div>
-                                                </motion.button>
-
-                                                <AnimatePresence>
-                                                  {expandedLevel === level && (
-                                                    <motion.div
-                                                      initial={{
-                                                        height: 0,
-                                                        opacity: 0,
-                                                      }}
-                                                      animate={{
-                                                        height: "auto",
-                                                        opacity: 1,
-                                                      }}
-                                                      exit={{
-                                                        height: 0,
-                                                        opacity: 0,
-                                                      }}
-                                                      className="overflow-hidden"
-                                                    >
-                                                      <div className="pl-8 pr-4 py-2 space-y-2">
-                                                        {books.map(
-                                                          (textbook) => (
-                                                            <motion.button
-                                                              key={textbook.id}
-                                                              onClick={() =>
-                                                                handleAssignTextbook(
-                                                                  textbook.id
-                                                                )
-                                                              }
-                                                              className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-surface-hover-light dark:hover:bg-surface-hover-dark"
-                                                              whileHover={{
-                                                                x: 4,
-                                                              }}
-                                                            >
-                                                              <div className="text-left flex items-center gap-4">
-                                                                <span className="text-sm text-text-secondary-light dark:text-text-secondary-dark w-8">
-                                                                  {textbook.sequence ||
-                                                                    "-"}
-                                                                  .
-                                                                </span>
-                                                                <div>
-                                                                  <h4 className="font-medium">
-                                                                    {
-                                                                      textbook.title
-                                                                    }
-                                                                  </h4>
-                                                                </div>
-                                                              </div>
-                                                            </motion.button>
-                                                          )
-                                                        )}
-                                                      </div>
-                                                    </motion.div>
-                                                  )}
-                                                </AnimatePresence>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </motion.div>
-                                      )}
-                                    </AnimatePresence>
-                                  </div>
-                                )
-                              )}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
+        <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+          {Object.entries(courseGroups).map(([courseName, courseList]) => (
+            <div key={courseName}>
+              <motion.button
+                onClick={() =>
+                  setExpandedCourse(
+                    expandedCourse === courseName ? null : courseName
                   )
-                )}
-              </div>
-            </div>
-
-            {/* 다음 교재 전달하기 버튼 */}
-            {currentTextbookId && (
-              <div className="p-4 border-t border-border-light dark:border-border-dark">
-                <button
-                  onClick={handleAssignNextTextbook}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+                }
+                className="w-full flex items-center justify-between p-3 hover:bg-surface-hover-light dark:hover:bg-surface-hover-dark rounded-lg"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{courseName}</span>
+                </div>
+                <motion.div
+                  animate={{
+                    rotate: expandedCourse === courseName ? 90 : 0,
+                  }}
+                  transition={{ duration: 0.2 }}
                 >
-                  <span>다음 교재 전달하기</span>
-                  <IoArrowForward />
-                </button>
-              </div>
-            )}
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+                  <IoChevronForward className="w-5 h-5" />
+                </motion.div>
+              </motion.button>
+
+              <AnimatePresence>
+                {expandedCourse === courseName && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="pl-4 space-y-2">
+                      {groupBySubject(courseList).map(
+                        ({ subject, textbooks }) => (
+                          <div key={subject}>
+                            <motion.button
+                              onClick={() =>
+                                setExpandedSubject(
+                                  expandedSubject === subject ? null : subject
+                                )
+                              }
+                              className="w-full flex items-center justify-between p-3 hover:bg-surface-hover-light dark:hover:bg-surface-hover-dark rounded-lg"
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{subject}</span>
+                              </div>
+                              <motion.div
+                                animate={{
+                                  rotate: expandedSubject === subject ? 90 : 0,
+                                }}
+                                transition={{ duration: 0.2 }}
+                              >
+                                <IoChevronForward className="w-5 h-5" />
+                              </motion.div>
+                            </motion.button>
+
+                            <AnimatePresence>
+                              {expandedSubject === subject && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{
+                                    height: "auto",
+                                    opacity: 1,
+                                  }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  className="overflow-hidden"
+                                >
+                                  <div className="pl-4 space-y-2">
+                                    {groupTextbooksByLevel(textbooks).map(
+                                      ({ level, books }) => (
+                                        <div key={level}>
+                                          <motion.button
+                                            onClick={() =>
+                                              setExpandedLevel(level)
+                                            }
+                                            className="w-full flex items-center justify-between p-3 hover:bg-surface-hover-light dark:hover:bg-surface-hover-dark rounded-lg"
+                                          >
+                                            <div className="flex items-center gap-2">
+                                              <span className="font-medium">
+                                                Level {level}
+                                              </span>
+                                            </div>
+                                            <motion.div
+                                              animate={{
+                                                rotate:
+                                                  expandedLevel === level
+                                                    ? 90
+                                                    : 0,
+                                              }}
+                                              transition={{
+                                                duration: 0.2,
+                                              }}
+                                            >
+                                              <IoChevronForward className="w-5 h-5" />
+                                            </motion.div>
+                                          </motion.button>
+
+                                          <AnimatePresence>
+                                            {expandedLevel === level && (
+                                              <motion.div
+                                                initial={{
+                                                  height: 0,
+                                                  opacity: 0,
+                                                }}
+                                                animate={{
+                                                  height: "auto",
+                                                  opacity: 1,
+                                                }}
+                                                exit={{
+                                                  height: 0,
+                                                  opacity: 0,
+                                                }}
+                                                className="overflow-hidden"
+                                              >
+                                                <div className="pl-8 pr-4 py-2 space-y-2">
+                                                  {books.map((textbook) => (
+                                                    <motion.button
+                                                      key={textbook.id}
+                                                      onClick={() =>
+                                                        handleAssignTextbook(
+                                                          textbook.id
+                                                        )
+                                                      }
+                                                      className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-surface-hover-light dark:hover:bg-surface-hover-dark"
+                                                      whileHover={{
+                                                        x: 4,
+                                                      }}
+                                                    >
+                                                      <div className="text-left flex items-center gap-4">
+                                                        <span className="text-sm text-text-secondary-light dark:text-text-secondary-dark w-8">
+                                                          {textbook.sequence ||
+                                                            "-"}
+                                                          .
+                                                        </span>
+                                                        <div>
+                                                          <h4 className="font-medium">
+                                                            {textbook.title}
+                                                          </h4>
+                                                        </div>
+                                                      </div>
+                                                    </motion.button>
+                                                  ))}
+                                                </div>
+                                              </motion.div>
+                                            )}
+                                          </AnimatePresence>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+
+        {currentTextbookId && (
+          <div className="p-4 border-t border-border-light dark:border-border-dark">
+            <button
+              onClick={handleAssignNextTextbook}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+            >
+              <span>다음 교재 전달하기</span>
+              <IoArrowForward />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

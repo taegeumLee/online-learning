@@ -77,20 +77,17 @@ export default function ViewTextbookModal({
   if (!isOpen || !textbook) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-[70vw] h-[90vh] flex flex-col overflow-hidden">
-        <div className="flex justify-between items-center p-4 border-b">
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-blue-500">
-              Lv.{textbook.level}
-            </span>
-            <h2 className="text-lg font-bold">{textbook.title}</h2>
-            {textbook.course && (
-              <span className="text-sm text-gray-500">
-                {textbook.course.name} ({textbook.course.subject})
-              </span>
-            )}
-          </div>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="bg-white rounded-lg p-6 w-[600px] max-h-[90vh] flex flex-col">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold">교재 정보</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"

@@ -4,31 +4,37 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 export async function PATCH(
-  req: Request,
+  request: Request,
   { params }: { params: { userId: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id || session.user.role !== "admin") {
+
+    // 인증 체크
+    if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { textbookId } = await req.json();
     const { userId } = params;
+    const { textbookId } = await request.json();
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
+    const user = await prisma.user.update({
+      where: {
+        id: userId,
+      },
       data: {
         recentTextbookId: textbookId,
         textbooks: {
-          connect: { id: textbookId },
+          connect: {
+            id: textbookId,
+          },
         },
       },
     });
 
-    return NextResponse.json(updatedUser);
+    return NextResponse.json(user);
   } catch (error) {
-    console.error("Error assigning textbook:", error);
+    console.error("Failed to assign textbook:", error);
     return NextResponse.json(
       { error: "Failed to assign textbook" },
       { status: 500 }

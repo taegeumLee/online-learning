@@ -40,7 +40,7 @@ export default function Manage() {
 
   return (
     <div className="flex w-full h-[calc(100vh-6rem)] p-4 gap-4">
-      {/* 왼쪽 섹션 - 너비 줄임 */}
+      {/* 왼쪽 섹션 */}
       <motion.div
         className="w-1/4 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow h-full overflow-auto scrollbar-hide border border-border-light"
         variants={itemVariants}
@@ -51,28 +51,9 @@ export default function Manage() {
         <RevenueStats />
       </motion.div>
 
-      {/* 오른쪽 섹션들 - 너비 늘림 */}
+      {/* 오른쪽 섹션들 */}
       <div className="w-3/4 grid grid-cols-5 grid-rows-3 gap-4 h-full">
-        <motion.div
-          className="col-span-2 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow overflow-auto scrollbar-hide border border-border-light"
-          variants={itemVariants}
-          whileHover="hover"
-          whileTap="tap"
-          {...hoverVariants}
-        >
-          <PaymentManagement />
-        </motion.div>
-        <motion.div
-          className="col-span-3 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow overflow-auto scrollbar-hide border border-border-light"
-          variants={itemVariants}
-          whileHover="hover"
-          whileTap="tap"
-          {...hoverVariants}
-        >
-          <TextbookManagement />
-        </motion.div>
-
-        {/* 학생 관리 섹션 - 3개 칸 너비, 2개 칸 높이 */}
+        {/* 학생 관리 섹션을 먼저 배치 */}
         <motion.div
           className="col-span-3 row-span-2 bg-background-light rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-border-light h-full"
           variants={itemVariants}
@@ -83,7 +64,29 @@ export default function Manage() {
           <StudentManagement />
         </motion.div>
 
-        {/* 나머지 섹션들 */}
+        {/* 결제관리 */}
+        <motion.div
+          className="col-span-2 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow overflow-auto scrollbar-hide border border-border-light"
+          variants={itemVariants}
+          whileHover="hover"
+          whileTap="tap"
+          {...hoverVariants}
+        >
+          <PaymentManagement />
+        </motion.div>
+
+        {/* 교재관리를 아래로 이동 */}
+        <motion.div
+          className="col-span-3 bg-background-light rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow overflow-auto scrollbar-hide border border-border-light"
+          variants={itemVariants}
+          whileHover="hover"
+          whileTap="tap"
+          {...hoverVariants}
+        >
+          <TextbookManagement />
+        </motion.div>
+
+        {/* 나머지 섹션 */}
         {[6].map((section) => (
           <motion.div
             key={section}

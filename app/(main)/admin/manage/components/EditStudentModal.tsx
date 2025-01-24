@@ -81,7 +81,14 @@ export default function EditStudentModal({
   if (!isOpen || !student) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="bg-white rounded-lg p-6 w-[500px]">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">학생 정보 수정</h2>

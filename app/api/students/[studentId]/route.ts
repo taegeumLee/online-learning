@@ -19,6 +19,7 @@ export async function PATCH(
         price: data.price,
         paymentDate: data.paymentDate,
         isActive: data.isActive,
+        teacherId: data.teacherId,
       },
     });
 
