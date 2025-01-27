@@ -5,11 +5,13 @@ export async function POST(request: Request) {
   try {
     const { userId } = await request.json();
 
-    // 가장 최근의 payment를 찾아서 status를 paid로 업데이트
+    // 가장 최근의 payment를 찾아서 status를 paid로 업데이트 (pending 또는 overdue)
     const latestPayment = await prisma.payment.findFirst({
       where: {
         userId,
-        status: "pending",
+        status: {
+          in: ["pending", "overdue"], // pending 또는 overdue 상태 모두 처리
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -18,7 +20,7 @@ export async function POST(request: Request) {
 
     if (!latestPayment) {
       return NextResponse.json(
-        { error: "No pending payment found" },
+        { error: "No pending or overdue payment found" },
         { status: 404 }
       );
     }

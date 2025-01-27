@@ -287,7 +287,7 @@ export default function PaymentManagement() {
             <>
               <div className="bg-red-50 px-3 py-1.5 rounded-md flex items-center gap-2 text-red-600 text-sm">
                 <FiUsers className="text-lg" />
-                <span>{totalStudents}</span>
+                <span>{unpaidStudents.length + overdueStudents.length}명</span>
               </div>
               <button
                 onClick={() => setShowAllStudents(!showAllStudents)}

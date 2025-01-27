@@ -187,11 +187,7 @@ export default function EditStudentModal({
             >
               <option value="">선생님 선택</option>
               {teachers.map((teacher) => (
-                <option
-                  key={teacher.id}
-                  value={teacher.id}
-                  selected={formData.teacherId === teacher.id}
-                >
+                <option key={teacher.id} value={teacher.id}>
                   {teacher.name} ({teacher.email})
                 </option>
               ))}
