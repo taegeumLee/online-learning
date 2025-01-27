@@ -34,9 +34,23 @@ model User {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  sentMessages     Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
+  fixedSchedules   FixedSchedule[]
+  sentMessages     Message[]       @relation("SentMessages")
+  receivedMessages Message[]       @relation("ReceivedMessages")
   Payment          Payment[]
+}
+
+model FixedSchedule {
+  id String @id @default(cuid())
+
+  dayOfWeek   Int
+  startHour   Int // 0-23
+  startMinute Int // 0-59
+  endHour     Int // 0-23
+  endMinute   Int // 0-59
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
 }
 
 model Textbook {

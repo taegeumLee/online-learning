@@ -1,9 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiUsers, FiSearch, FiEdit2, FiCalendar } from "react-icons/fi";
+import {
+  FiUsers,
+  FiSearch,
+  FiEdit2,
+  FiCalendar,
+  FiClock,
+} from "react-icons/fi";
 import EditStudentModal from "./EditStudentModal";
+import FixedScheduleModal from "./FixedScheduleModal";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 interface Student {
   id: string;
@@ -26,6 +34,7 @@ interface Teacher {
 }
 
 export default function StudentManagement() {
+  const { data: session, status } = useSession();
   const [students, setStudents] = useState<Student[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,6 +44,11 @@ export default function StudentManagement() {
   >("all");
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isFixedScheduleModalOpen, setIsFixedScheduleModalOpen] =
+    useState(false);
+  const [selectedStudentForSchedule, setSelectedStudentForSchedule] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     fetchStudents();
@@ -119,7 +133,13 @@ export default function StudentManagement() {
     }
   };
 
-  if (loading) return <div>로딩 중...</div>;
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (!session?.user) {
+    return null;
+  }
 
   return (
     <div className="h-full flex flex-col p-4">
@@ -208,6 +228,16 @@ export default function StudentManagement() {
                     </button>
                     <button
                       onClick={() => {
+                        setSelectedStudentForSchedule(student.id);
+                        setIsFixedScheduleModalOpen(true);
+                      }}
+                      className="p-2 text-gray-600 hover:text-blue-500 transition-colors rounded-full hover:bg-blue-50"
+                      title="고정 스케줄 관리"
+                    >
+                      <FiClock />
+                    </button>
+                    <button
+                      onClick={() => {
                         /* TODO: 스케줄 관리 모달 열기 */
                       }}
                       className="p-2 text-gray-600 hover:text-blue-500 transition-colors rounded-full hover:bg-blue-50"
@@ -235,6 +265,16 @@ export default function StudentManagement() {
         }}
         student={selectedStudent}
         onSubmit={handleEditStudent}
+      />
+
+      <FixedScheduleModal
+        isOpen={isFixedScheduleModalOpen}
+        onClose={() => {
+          setIsFixedScheduleModalOpen(false);
+          setSelectedStudentForSchedule(null);
+        }}
+        studentId={selectedStudentForSchedule || ""}
+        currentTeacherId={session?.user?.id}
       />
     </div>
   );
