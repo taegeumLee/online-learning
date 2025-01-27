@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { startOfToday } from "date-fns";
 
 export async function GET(
   request: Request,
@@ -12,9 +11,6 @@ export async function GET(
     const schedules = await prisma.schedule.findMany({
       where: {
         userId: studentId,
-        startAt: {
-          gte: startOfToday(),
-        },
       },
       include: {
         user: {

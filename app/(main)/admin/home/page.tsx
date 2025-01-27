@@ -12,6 +12,12 @@ import { useState, useEffect } from "react";
 import Calendar from "./components/calendar";
 import { AdminTextbookModal } from "./components/admin-textbook-modal";
 import { AdminMessageModal } from "./components/admin-message-modal";
+import {
+  getKoreanStartOfDay,
+  getKoreanEndOfDay,
+  formatKoreanTime,
+  getKoreanTime,
+} from "@/lib/date-utils";
 
 type Student = {
   id: string;
@@ -25,10 +31,20 @@ type Student = {
   startAt: Date;
   endAt: Date;
   currentTextbookId: string | null;
+  scheduleStatus: string;
+  todaySchedule: {
+    startAt: Date;
+    endAt: Date;
+  } | null;
 };
 
 async function fetchStudents() {
-  const res = await fetch("/api/students");
+  const startOfDay = getKoreanStartOfDay();
+  const endOfDay = getKoreanEndOfDay();
+
+  const res = await fetch(
+    `/api/students?includeTodaySchedule=true&start=${startOfDay.toISOString()}&end=${endOfDay.toISOString()}`
+  );
   if (!res.ok) {
     const error = await res.json();
     throw new Error(error.message || "Failed to fetch students");
@@ -101,7 +117,51 @@ export default function Home() {
       </div>
     );
   }
+
+  // 디버깅을 위한 console.log 추가
+  console.log("전체 학생 수:", students.length);
+  console.log("현재 시간(UTC):", new Date().toISOString());
+  console.log("현재 시간(KST):", getKoreanTime(new Date()).toISOString());
+  console.log("오늘 시작(KST):", getKoreanStartOfDay().toISOString());
+  console.log("오늘 끝(KST):", getKoreanEndOfDay().toISOString());
+  console.log(
+    "오늘 수업이 있는 학생:",
+    students.filter((s: Student) => s.todaySchedule).length,
+    "명"
+  );
+  console.log(
+    "학생별 스케줄:",
+    students
+      .filter((s: Student) => s.todaySchedule)
+      .map((s: Student) => ({
+        name: s.name,
+        schedule: {
+          status: s.scheduleStatus,
+          startAt: formatKoreanTime(
+            s.todaySchedule!.startAt,
+            "yyyy-MM-dd HH:mm"
+          ),
+          endAt: formatKoreanTime(s.todaySchedule!.endAt, "yyyy-MM-dd HH:mm"),
+          rawStartAt: s.todaySchedule!.startAt,
+          rawEndAt: s.todaySchedule!.endAt,
+        },
+      }))
+  );
+
   const sortedStudents = [...students].sort((a, b) => {
+    // 1. 오늘 수업이 있는 학생을 먼저 정렬
+    if (a.todaySchedule && !b.todaySchedule) return -1;
+    if (!a.todaySchedule && b.todaySchedule) return 1;
+
+    // 2. 오늘 수업이 있는 학생들 중에서는 수업 시작 시간순으로 정렬
+    if (a.todaySchedule && b.todaySchedule) {
+      return (
+        new Date(a.todaySchedule.startAt).getTime() -
+        new Date(b.todaySchedule.startAt).getTime()
+      );
+    }
+
+    // 3. 나머지 학생들은 다음 수업 시작 시간순으로 정렬
     return new Date(a.startAt).getTime() - new Date(b.startAt).getTime();
   });
 
@@ -183,10 +243,23 @@ export default function Home() {
                     {student.isActive && (
                       <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                     )}
+                    {student.scheduleStatus === "pending" &&
+                      student.todaySchedule && (
+                        <span className="text-xs px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full">
+                          수업 예정
+                        </span>
+                      )}
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
                     {student.courseSubject} - {student.textbookTitle}
                   </p>
+                  {student.todaySchedule && (
+                    <p className="text-xs text-blue-600 mt-1">
+                      오늘 수업:{" "}
+                      {formatKoreanTime(student.todaySchedule.startAt)} -{" "}
+                      {formatKoreanTime(student.todaySchedule.endAt)}
+                    </p>
+                  )}
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-gray-500">다음 수업</p>
