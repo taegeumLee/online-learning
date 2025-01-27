@@ -10,6 +10,7 @@ import {
 } from "react-icons/fi";
 import EditStudentModal from "./EditStudentModal";
 import FixedScheduleModal from "./FixedScheduleModal";
+import ScheduleManagementModal from "./ScheduleManagementModal";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
@@ -49,6 +50,7 @@ export default function StudentManagement() {
   const [selectedStudentForSchedule, setSelectedStudentForSchedule] = useState<
     string | null
   >(null);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
   useEffect(() => {
     fetchStudents();
@@ -238,7 +240,8 @@ export default function StudentManagement() {
                     </button>
                     <button
                       onClick={() => {
-                        /* TODO: 스케줄 관리 모달 열기 */
+                        setSelectedStudentForSchedule(student.id);
+                        setIsScheduleModalOpen(true);
                       }}
                       className="p-2 text-gray-600 hover:text-blue-500 transition-colors rounded-full hover:bg-blue-50"
                       title="스케줄 관리"
@@ -275,6 +278,18 @@ export default function StudentManagement() {
         }}
         studentId={selectedStudentForSchedule || ""}
         currentTeacherId={session?.user?.id}
+      />
+
+      <ScheduleManagementModal
+        isOpen={isScheduleModalOpen}
+        onClose={() => {
+          setIsScheduleModalOpen(false);
+          setSelectedStudentForSchedule(null);
+        }}
+        studentId={selectedStudentForSchedule || ""}
+        studentName={
+          students.find((s) => s.id === selectedStudentForSchedule)?.name || ""
+        }
       />
     </div>
   );
