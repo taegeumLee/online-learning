@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { getKoreanTime } from "@/lib/date-utils";
 
 export async function GET(request: Request) {
@@ -54,7 +52,7 @@ export async function GET(request: Request) {
               },
             },
           },
-          Schedule: {
+          schedules: {
             where: {
               status: "pending",
             },
@@ -74,7 +72,7 @@ export async function GET(request: Request) {
       // 스케줄 목록용 응답 데이터 가공
       const formattedStudents = students.map((student: any) => {
         const textbook = student.textbooks[0];
-        const schedules = student.Schedule || [];
+        const schedules = student.schedules || [];
         const nextSchedule = schedules[0];
 
         return {

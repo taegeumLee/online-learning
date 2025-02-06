@@ -85,7 +85,7 @@ export default function ViewTextbookModal({
         }
       }}
     >
-      <div className="bg-white rounded-lg p-6 w-[600px] max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-lg p-6 w-[1200px] max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">교재 정보</h2>
           <button
@@ -96,26 +96,87 @@ export default function ViewTextbookModal({
           </button>
         </div>
 
-        <div className="flex-1 overflow-auto notion-app notion-frame">
+        <div className="flex-1 overflow-y-auto">
           {notionData ? (
-            <NotionRenderer
-              recordMap={notionData}
-              components={{
-                Code,
-                Collection,
-                Equation,
-                Modal,
-                Pdf,
+            <div
+              className="notion-app notion-frame"
+              style={{
+                height: "auto",
+                maxHeight: "calc(90vh - 100px)",
+                width: "100%",
+                maxWidth: "100%",
               }}
-              fullPage={true}
-              darkMode={false}
-            />
+            >
+              <NotionRenderer
+                recordMap={notionData}
+                components={{
+                  Code,
+                  Collection,
+                  Equation,
+                  Modal,
+                  Pdf,
+                }}
+                fullPage={true}
+                darkMode={false}
+                className="notion-page-no-cover notion-page-no-padding"
+                pageHeader={false}
+                pageFooter={false}
+                showTableOfContents={true}
+                minTableOfContentsItems={1}
+                disableHeader={true}
+              />
+            </div>
           ) : (
             <div className="h-full flex items-center justify-center">
               <p className="text-gray-500">로딩 중...</p>
             </div>
           )}
         </div>
+
+        <style jsx global>{`
+          .notion-page {
+            padding: 0 !important;
+            width: 100% !important;
+          }
+          .notion-page-content {
+            padding: 0 !important;
+            width: 100% !important;
+            margin-top: 0 !important;
+          }
+          .notion-page-content-inner {
+            max-width: none !important;
+            padding: 0 1rem !important;
+            margin-top: 0 !important;
+          }
+          .notion-table {
+            max-width: 100% !important;
+            font-size: 0.9em !important;
+          }
+          .notion-text {
+            font-size: 0.95em !important;
+          }
+          .notion-asset-wrapper {
+            max-width: 90% !important;
+            margin: 0 auto !important;
+          }
+          /* 목차 스타일 수정 */
+          .notion-table-of-contents {
+            max-width: 200px !important;
+            font-size: 0.85em !important;
+            padding: 0.5rem !important;
+            margin-top: 0 !important;
+          }
+          .notion-table-of-contents-item {
+            padding: 3px 0 !important;
+          }
+          /* 추가: 상단 여백 관련 스타일 */
+          .notion-header {
+            display: none !important;
+          }
+          .notion-page-scroller {
+            margin-top: 0 !important;
+          }
+        `}</style>
       </div>
     </div>
   );
